@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import random
+import time
 
 class Snake:   
     def __init__(self, home_screen):
@@ -12,22 +13,19 @@ class Snake:
         self.snake_color = (255, 255, 255)
         self.snake = pygame.draw.rect(self.home_screen, self.snake_color, (self.snake_x, self.snake_y, self.snake_size, self.snake_size))
         pygame.display.flip()
+        self.direction = "center"
 
     def move_up(self):
-        self.snake_y -= 10
-        self.draw()
+        self.direction = "up"
     
     def move_down(self):
-        self.snake_y += 10
-        self.draw()
+        self.direction = "down"
     
     def move_left(self):
-        self.snake_x -= 10
-        self.draw()
+        self.direction = "left"
 
     def move_right(self):
-        self.snake_x += 10
-        self.draw()
+        self.direction = "right"
 
     
 
@@ -36,6 +34,19 @@ class Snake:
         self.home_screen.fill((0, 0, 0))
         pygame.draw.rect(self.home_screen, self.snake_color, (self.snake_x, self.snake_y, self.snake_size, self.snake_size))
         pygame.display.flip()
+
+    def auto_walk(self):
+        if self.direction == "up":
+            self.snake_y -= 20
+        if self.direction == "down":
+            self.snake_y += 20
+        if self.direction == "left":
+            self.snake_x -= 20 
+        if self.direction == "right":
+            self.snake_x += 20
+
+
+        self.draw()
         
   
 
@@ -69,8 +80,9 @@ class Game:
 
                 elif event.type == pygame.QUIT:
                     running = False
-            # draw_apple()
-            pygame.display.flip()
+
+            self.snake.auto_walk()
+            time.sleep(0.2)
         pygame.quit()
 
 
