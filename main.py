@@ -1,48 +1,105 @@
 import pygame
 from pygame.locals import *
+import random
 
-def draw_snake():
-    screen.fill((0, 0, 0))
-    pygame.draw.rect(screen, snake_color, (snake_x, snake_y, snake_size, snake_size))  # Draw snake
-    pygame.display.flip()
+class Snake:   
+    def __init__(self, home_screen):
+        self.home_screen = home_screen
+        home_screen.fill((0, 0, 0))
+        self.snake_x = 400
+        self.snake_y = 250
+        self.snake_size = 20
+        self.snake_color = (255, 255, 255)
+        self.snake = pygame.draw.rect(self.home_screen, self.snake_color, (self.snake_x, self.snake_y, self.snake_size, self.snake_size))
+        pygame.display.flip()
+
+    def move_up(self):
+        self.snake_y -= 10
+        self.draw()
+    
+    def move_down(self):
+        self.snake_y += 10
+        self.draw()
+    
+    def move_left(self):
+        self.snake_x -= 10
+        self.draw()
+
+    def move_right(self):
+        self.snake_x += 10
+        self.draw()
+
+    
+
+
+    def draw(self):
+        self.home_screen.fill((0, 0, 0))
+        pygame.draw.rect(self.home_screen, self.snake_color, (self.snake_x, self.snake_y, self.snake_size, self.snake_size))
+        pygame.display.flip()
         
+  
+
+class Game:
+    def __init__(self):
+        pygame.init()
+        self.screen_x = 800
+        self.screen_y = 600
+        self.screen = pygame.display.set_mode((self.screen_x, self.screen_y))
+        self.snake = Snake(self.screen)
+        self.snake.draw()
+
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        running = False
+                    if event.key == K_UP:
+                        self.snake.move_up()
+                        
+                    if event.key == K_DOWN:
+                        self.snake.move_down()
+        
+                    if event.key == K_LEFT:
+                        self.snake.move_left() 
+
+                    if event.key == K_RIGHT:
+                        self.snake.move_right()
+
+                elif event.type == pygame.QUIT:
+                    running = False
+            # draw_apple()
+            pygame.display.flip()
+        pygame.quit()
+
+
+
+
+
 
 if __name__ == "__main__":
-    pygame.init()
-
-    # set the screen size
-    screen_x = 800
-    screen_y = 600
-    screen = pygame.display.set_mode((screen_x, screen_y))
-    
-    # draw the snake
-    snake_x = 400
-    snake_y = 250
-    snake_size = 20
-    snake_color = (255, 255, 255)
-    draw_snake()
+    game = Game()
+    game.run()
 
     pygame.display.set_caption("Snake Game")
 
+    
 
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    running = False
-                if event.key == K_UP:
-                    snake_y -= 10
-                    draw_snake()
-                if event.key == K_DOWN:
-                    snake_y += 10
-                    draw_snake()    
-                if event.key == K_LEFT:
-                    snake_x -= 10
-                    draw_snake()    
-                if event.key == K_RIGHT:
-                    snake_x += 10
-                    draw_snake()    
-            elif event.type == pygame.QUIT:
-                running = False
-    pygame.quit()
+    # def draw_apple():
+#     pygame.draw.rect(screen, apple_color, (food_x, food_y, food_size, food_size))  # Draw apple
+
+# def eat_apple():
+#     if snake_x == food_x and snake_y == food_y:
+#         snake_size += 10
+#         draw_snake()
+
+   # draw the food + randomise position
+    # apple_color = (255, 0, 0)
+    # food_size = 20
+    # food_x = random.randint(0, screen_x - food_size)
+    # food_y = random.randint(0, screen_y - food_size)
+    # food_color = (255, 0, 0)
+    # pygame.draw.rect(screen, food_color, (food_x, food_y, food_size, food_size))
+    # pygame.display.flip()
+    # draw_apple()
