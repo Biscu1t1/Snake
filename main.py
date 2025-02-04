@@ -16,15 +16,18 @@ class Apple:
         pygame.draw.rect(self.home_screen, self.apple_color, (self.food_x, self.food_y, self.food_size, self.food_size))
         pygame.display.flip()
 
+
+
 class Snake:   
     def __init__(self, home_screen, snake_length):
         self.snake_length = snake_length
         self.home_screen = home_screen
         self.snake_size = 20
-
-        self.x = [self.snake_size]*snake_length
-        self.y = [self.snake_size]*snake_length
         self.snake_color = (255, 255, 255)
+
+        self.x = [100 - i * self.snake_size for i in range(snake_length)]
+        self.y = [100] * snake_length
+        
         pygame.display.flip()
         self.direction = "center"
 
@@ -87,11 +90,17 @@ class Game:
 
     def game_over_screen(self):
         font = pygame.font.SysFont(None, 55)
-        self.score()
-        pygame.display.flip()
-        game_over_text = font.render("Game Over! Press R to Restart or Q to Quit", True, (255, 255, 255))
+        game_over_text = font.render("Game Over!" + " ", True, (255, 255, 255))
+        restart_text = font.render("Press R to Restart", True, (255, 255, 255))
+        quit_text = font.render("Press Q to Quit", True, (255, 255, 255))
         self.screen.fill((0, 0, 0))
-        self.screen.blit(game_over_text, (self.screen_x // 6, self.screen_y // 3))
+
+        screen_center_x = self.screen_x // 2
+        screen_center_y = self.screen_y // 3
+
+        self.screen.blit(game_over_text, (screen_center_x - game_over_text.get_width() // 2, screen_center_y))
+        self.screen.blit(restart_text, (screen_center_x - restart_text.get_width() // 2, screen_center_y + 60))
+        self.screen.blit(quit_text, (screen_center_x - quit_text.get_width() // 2, screen_center_y + 120))
         pygame.display.flip()
 
         waiting = True
@@ -118,6 +127,16 @@ class Game:
     def is_out_of_bounds(self, x, y):
         if x < 0 or x >= self.screen_x or y < 0 or y >= self.screen_y:
             return True
+        return False
+
+    def snake_collision(self):
+        # prevent collision at the start of the game
+        if self.snake.snake_length < 3:  
+            return False
+
+        for i in range(1, self.snake.snake_length):
+            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+                return True
         return False
 
     def score(self):
@@ -178,6 +197,10 @@ class Game:
 
             if self.is_out_of_bounds(self.snake.x[0], self.snake.y[0]):
                 self.game_over_screen()
+            
+            if self.snake_collision():
+                self.game_over_screen()
+                return
 
             time.sleep(0.1)
         pygame.quit()
