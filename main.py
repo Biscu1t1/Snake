@@ -8,8 +8,8 @@ class Apple:
         self.home_screen = home_screen
         self.apple_color = (255, 0, 0)
         self.food_size = 20
-        self.food_x = random.randint(0, 800 - self.food_size)
-        self.food_y = random.randint(0, 600 - self.food_size)
+        self.food_x = random.randint(0, 40) * self.food_size
+        self.food_y = random.randint(0, 30) * self.food_size
         self.food_color = (255, 0, 0)
 
     def draw_apple(self):
@@ -24,8 +24,6 @@ class Snake:
 
         self.x = [self.snake_size]*snake_length
         self.y = [self.snake_size]*snake_length
-        self.snake_x = 400
-        self.snake_y = 250
         self.snake_color = (255, 255, 255)
         pygame.display.flip()
         self.direction = "center"
@@ -87,6 +85,38 @@ class Game:
         self.apple = Apple(self.screen)
         self.apple.draw_apple()
 
+    def is_collision(self , x1, y1, x2, y2):
+        if x1 >= x2 and x1 < x2 + self.snake.snake_size:
+            if y1 >= y2 and y1 < y2 + self.snake.snake_size:
+                return True
+
+        return False
+    
+    def is_out_of_bounds(self, x, y):
+        if x < 0 or x >= self.screen_x or y < 0 or y >= self.screen_y:
+            return True
+        return False
+
+
+    def eat_apple(self):
+         if self.snake.x[0] == self.apple.food_x and self.snake.y[0] == self.apple.food_y: 
+            self.snake.snake_length += 1
+            self.snake.x.append(self.snake.x[-1])  
+            self.snake.y.append(self.snake.y[-1])
+
+            # Generate new apple & make sure it doesn't appear on the snake
+            while True:
+                new_x = random.randint(0, 39) * 20  
+                new_y = random.randint(0, 29) * 20
+
+                snake_body = [(self.snake.x[i], self.snake.y[i]) for i in range(self.snake.snake_length)]
+                if (new_x, new_y) not in snake_body:  
+                    break  
+
+            self.apple.food_x = new_x
+            self.apple.food_y = new_y
+    
+
     def run(self):
         running = True
         while running:
@@ -113,7 +143,13 @@ class Game:
             self.snake.auto_walk()
             self.apple.draw_apple()
 
-            time.sleep(0.2)
+            if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.food_x, self.apple.food_y):
+                self.eat_apple()
+
+            if self.is_out_of_bounds(self.snake.x[0], self.snake.y[0]):
+                running = False
+
+            time.sleep(0.1)
         pygame.quit()
 
 
