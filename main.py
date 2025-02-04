@@ -79,11 +79,34 @@ class Game:
         self.screen_x = 800
         self.screen_y = 600
         self.screen = pygame.display.set_mode((self.screen_x, self.screen_y))
-        self.snake = Snake(self.screen, 3)
+        self.snake = Snake(self.screen, 2)
         self.snake.draw()
 
         self.apple = Apple(self.screen)
         self.apple.draw_apple()
+
+    def game_over_screen(self):
+        font = pygame.font.SysFont(None, 55)
+        self.score()
+        pygame.display.flip()
+        game_over_text = font.render("Game Over! Press R to Restart or Q to Quit", True, (255, 255, 255))
+        self.screen.fill((0, 0, 0))
+        self.screen.blit(game_over_text, (self.screen_x // 6, self.screen_y // 3))
+        pygame.display.flip()
+
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    exit()
+                if event.type == KEYDOWN:
+                    if event.key == K_q:  # Quit
+                        pygame.quit()
+                        exit()
+                    if event.key == K_r:  # Restart the game
+                        self.__init__()  # Reinitialize game
+                        self.run()
 
     def is_collision(self , x1, y1, x2, y2):
         if x1 >= x2 and x1 < x2 + self.snake.snake_size:
@@ -96,6 +119,11 @@ class Game:
         if x < 0 or x >= self.screen_x or y < 0 or y >= self.screen_y:
             return True
         return False
+
+    def score(self):
+        font = pygame.font.SysFont(None, 55)
+        score_text = font.render("Score: " + str(self.snake.snake_length - 2), True, (255, 255, 255))
+        self.screen.blit(score_text, (10, 10))
 
 
     def eat_apple(self):
@@ -142,12 +170,14 @@ class Game:
 
             self.snake.auto_walk()
             self.apple.draw_apple()
+            self.score()
+            pygame.display.flip()
 
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.food_x, self.apple.food_y):
                 self.eat_apple()
 
             if self.is_out_of_bounds(self.snake.x[0], self.snake.y[0]):
-                running = False
+                self.game_over_screen()
 
             time.sleep(0.1)
         pygame.quit()
