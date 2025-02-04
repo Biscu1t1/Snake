@@ -8,8 +8,8 @@ class Apple:
         self.home_screen = home_screen
         self.apple_color = (255, 0, 0)
         self.food_size = 20
-        self.food_x = random.randint(0, 40) * self.food_size
-        self.food_y = random.randint(0, 30) * self.food_size
+        self.food_x = random.randint(0, 39) * self.food_size
+        self.food_y = random.randint(0, 29) * self.food_size
         self.food_color = (255, 0, 0)
 
     def draw_apple(self):
@@ -54,6 +54,12 @@ class Snake:
         self.home_screen.fill((0, 0, 0))
         for i in range(self.snake_length):
             pygame.draw.rect(self.home_screen, self.snake_color, (self.x[i], self.y[i], self.snake_size, self.snake_size))
+    
+        # Draw score in a fixed location
+        font = pygame.font.SysFont(None, 55)
+        score_text = font.render(f"Score: {self.snake_length - 2}", True, (255, 255, 255))
+        self.home_screen.blit(score_text, (10, 10))  # Draw score at top-left
+
         pygame.display.flip()
 
     def auto_walk(self):
@@ -139,11 +145,6 @@ class Game:
                 return True
         return False
 
-    def score(self):
-        font = pygame.font.SysFont(None, 55)
-        score_text = font.render("Score: " + str(self.snake.snake_length - 2), True, (255, 255, 255))
-        self.screen.blit(score_text, (10, 10))
-
 
     def eat_apple(self):
          if self.snake.x[0] == self.apple.food_x and self.snake.y[0] == self.apple.food_y: 
@@ -167,7 +168,6 @@ class Game:
     def run(self):
         running = True
         while running:
-            self.screen.fill((0, 0, 0))
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -189,7 +189,6 @@ class Game:
 
             self.snake.auto_walk()
             self.apple.draw_apple()
-            self.score()
             pygame.display.flip()
 
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.food_x, self.apple.food_y):
@@ -204,10 +203,6 @@ class Game:
 
             time.sleep(0.1)
         pygame.quit()
-
-
-
-
 
 
 if __name__ == "__main__":
